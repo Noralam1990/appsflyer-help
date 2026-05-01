@@ -1,0 +1,80 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>AppsFlyer 学习知识库</title>
+    <link rel="stylesheet" href="./styles.css?v=9">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="知识库导航">
+        <div class="brand">
+          <div class="brand-mark" aria-hidden="true">AF</div>
+          <div>
+            <h1>AppsFlyer 学习知识库</h1>
+            <p>官方资料速查 · 新手友好</p>
+          </div>
+        </div>
+
+        <label class="search" for="searchInput">
+          <span class="search-label">搜索知识点</span>
+          <span class="search-control">
+            <input id="searchInput" type="search" autocomplete="off" placeholder="搜索 SKAN、OneLink、ROI360...">
+            <button id="clearSearch" class="icon-button" type="button" aria-label="清空搜索" title="清空搜索">×</button>
+          </span>
+        </label>
+
+        <div class="role-filter" aria-label="按岗位筛选">
+          <button class="role-pill active" type="button" data-role="all">全部</button>
+          <button class="role-pill" type="button" data-role="newbie">新手</button>
+          <button class="role-pill" type="button" data-role="ua">增长</button>
+          <button class="role-pill" type="button" data-role="product">产品</button>
+          <button class="role-pill" type="button" data-role="data">数据</button>
+          <button class="role-pill" type="button" data-role="dev">开发</button>
+          <button class="role-pill" type="button" data-role="skan">SKAN</button>
+        </div>
+
+        <nav id="docNav" class="doc-nav" aria-label="文档列表"></nav>
+      </aside>
+
+      <main class="main">
+        <section class="toolbar" aria-label="当前阅读状态">
+          <div>
+            <p id="eyebrow" class="eyebrow">知识库</p>
+            <h2 id="currentTitle">正在加载...</h2>
+          </div>
+          <div class="toolbar-actions">
+            <button id="expandAll" class="ghost-button" type="button">收起目录</button>
+            <button id="copyLink" class="ghost-button" type="button">复制位置</button>
+          </div>
+        </section>
+
+        <section class="insight-strip" aria-label="学习入口">
+          <article>
+            <span>建议入口</span>
+            <strong>先看术语，再看核心笔记</strong>
+          </article>
+          <article>
+            <span>最快定位</span>
+            <strong>搜索 + 岗位筛选</strong>
+          </article>
+          <article>
+            <span>可信度</span>
+            <strong>来源索引集中复查</strong>
+          </article>
+        </section>
+
+        <section id="tocPanel" class="toc-panel" aria-label="当前文档目录">
+          <div class="toc-heading">本文目录</div>
+          <div id="tocList" class="toc-list"></div>
+        </section>
+
+        <article id="content" class="content" tabindex="-1"></article>
+      </main>
+    </div>
+
+    <script src="./docs-data.js?v=9"></script>
+    <script src="./app.js?v=9"></script>
+  </body>
+</html>
