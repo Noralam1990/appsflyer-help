@@ -3,6 +3,9 @@ const state = {
   query: "",
   role: "all",
   tocCollapsed: false,
+  aiOpen: false,
+  aiBusy: false,
+  aiHistory: [],
 };
 
 const els = {
@@ -17,6 +20,14 @@ const els = {
   tocList: document.querySelector("#tocList"),
   expandAll: document.querySelector("#expandAll"),
   copyLink: document.querySelector("#copyLink"),
+  aiToggle: document.querySelector("#aiToggle"),
+  aiPanel: document.querySelector("#aiPanel"),
+  aiClose: document.querySelector("#aiClose"),
+  aiMessages: document.querySelector("#aiMessages"),
+  aiForm: document.querySelector("#aiForm"),
+  aiInput: document.querySelector("#aiInput"),
+  aiSend: document.querySelector("#aiSend"),
+  aiContextHint: document.querySelector("#aiContextHint"),
 };
 
 const roleLabels = {
@@ -33,6 +44,8 @@ const docs = (window.APPSFLYER_DOCS || []).map((doc) => ({
   ...doc,
   searchText: `${doc.title}\n${doc.summary}\n${doc.markdown}`.toLowerCase(),
 }));
+
+const knowledgeChunks = buildKnowledgeChunks(docs);
 
 const inlineTermNotes = {
   pid: "媒体源，用来识别哪个渠道带来流量",
@@ -144,16 +157,18 @@ const roadmapCards = [
   },
 ];
 
+const roadmapAnchorIds = new Set([...roadmapCards.map((card) => card.id), "parameter-guide"]);
+
 init();
 
 function init() {
   const hashDoc = decodeURIComponent(location.hash.replace(/^#/, ""));
-  const initialDoc = docs.find((doc) => doc.id === hashDoc) || docs[0];
-  state.activeDocId = initialDoc?.id || null;
+  state.activeDocId = resolveDocIdFromHash(hashDoc) || docs[0]?.id || null;
 
   bindEvents();
   renderNav();
   renderActiveDoc();
+  scrollToHashAnchor(hashDoc);
 }
 
 function bindEvents() {
@@ -221,12 +236,33 @@ function bindEvents() {
     }
   });
 
+  els.aiToggle.addEventListener("click", () => {
+    setAiOpen(!state.aiOpen);
+  });
+
+  els.aiClose.addEventListener("click", () => {
+    setAiOpen(false);
+  });
+
+  els.aiForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    await askAi(els.aiInput.value);
+  });
+
+  els.aiMessages.addEventListener("click", async (event) => {
+    const promptButton = event.target.closest("[data-ai-prompt]");
+    if (!promptButton) return;
+    await askAi(promptButton.dataset.aiPrompt);
+  });
+
   window.addEventListener("hashchange", () => {
     const hashDoc = decodeURIComponent(location.hash.replace(/^#/, ""));
-    if (docs.some((doc) => doc.id === hashDoc)) {
-      state.activeDocId = hashDoc;
+    const routeDocId = resolveDocIdFromHash(hashDoc);
+    if (routeDocId) {
+      state.activeDocId = routeDocId;
       renderNav();
       renderActiveDoc();
+      scrollToHashAnchor(hashDoc);
     }
   });
 }
@@ -291,6 +327,226 @@ function renderActiveDoc() {
     ? renderRoleRoadmaps(state.query)
     : markdownToHtml(doc.markdown, state.query);
   renderToc();
+  updateAiContextHint();
+}
+
+function setAiOpen(isOpen) {
+  state.aiOpen = isOpen;
+  els.aiPanel.hidden = !isOpen;
+  els.aiToggle.setAttribute("aria-expanded", String(isOpen));
+
+  if (isOpen) {
+    updateAiContextHint();
+    requestAnimationFrame(() => els.aiInput.focus());
+  }
+}
+
+async function askAi(rawQuestion) {
+  const question = rawQuestion.trim();
+  if (!question || state.aiBusy) return;
+
+  setAiOpen(true);
+  setAiBusy(true);
+  els.aiInput.value = "";
+
+  const context = findRelevantChunks(question);
+  const activeDoc = getActiveDoc();
+  appendAiMessage("user", question);
+  const pending = appendAiMessage("assistant", "正在查阅知识库并组织回答...");
+
+  try {
+    const response = await fetch(getAiEndpoint(), {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        question,
+        context,
+        activeDoc: activeDoc ? { id: activeDoc.id, title: activeDoc.title, summary: activeDoc.summary } : null,
+        history: state.aiHistory.slice(-6),
+      }),
+    });
+
+    const data = await response.json().catch(() => ({}));
+    if (!response.ok) {
+      throw new Error(data.error || "AI 服务暂时不可用");
+    }
+
+    updateAiMessage(pending, data.answer, context);
+    rememberAiTurn("user", question);
+    rememberAiTurn("assistant", data.answer);
+  } catch (error) {
+    const fallback = buildLocalFallback(question, context, error.message);
+    updateAiMessage(pending, fallback, context);
+    rememberAiTurn("user", question);
+    rememberAiTurn("assistant", fallback);
+  } finally {
+    setAiBusy(false);
+  }
+}
+
+function setAiBusy(isBusy) {
+  state.aiBusy = isBusy;
+  els.aiSend.disabled = isBusy;
+  els.aiInput.disabled = isBusy;
+  els.aiSend.textContent = isBusy ? "思考中" : "发送";
+}
+
+function appendAiMessage(role, text) {
+  const message = document.createElement("article");
+  message.className = `ai-message ${role}`;
+  message.innerHTML = formatAiAnswer(text);
+  els.aiMessages.append(message);
+  els.aiMessages.scrollTop = els.aiMessages.scrollHeight;
+  return message;
+}
+
+function updateAiMessage(message, text, context) {
+  const sources = context.length
+    ? `<div class="ai-sources"><span>参考</span>${context.slice(0, 3).map((item) => `<button type="button" data-doc-id="${item.docId}">${escapeHtml(item.title)}</button>`).join("")}</div>`
+    : "";
+  message.innerHTML = `${formatAiAnswer(text)}${sources}`;
+  message.querySelectorAll("[data-doc-id]").forEach((button) => {
+    button.addEventListener("click", () => {
+      const docId = button.dataset.docId;
+      if (!docs.some((doc) => doc.id === docId)) return;
+      state.activeDocId = docId;
+      history.replaceState(null, "", `#${encodeURIComponent(docId)}`);
+      renderNav();
+      renderActiveDoc();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
+  });
+  els.aiMessages.scrollTop = els.aiMessages.scrollHeight;
+}
+
+function rememberAiTurn(role, content) {
+  state.aiHistory.push({ role, content });
+  state.aiHistory = state.aiHistory.slice(-10);
+}
+
+function getAiEndpoint() {
+  return location.protocol === "file:" ? "http://localhost:8787/api/ask" : "/api/ask";
+}
+
+function updateAiContextHint() {
+  const doc = getActiveDoc();
+  if (!doc) return;
+  els.aiContextHint.textContent = `当前上下文：${doc.title}`;
+}
+
+function buildLocalFallback(question, context, errorMessage) {
+  const contextLines = context
+    .slice(0, 3)
+    .map((item) => `- ${item.title}：${item.excerpt.slice(0, 180)}${item.excerpt.length > 180 ? "..." : ""}`)
+    .join("\n");
+
+  return [
+    `AI 服务还没有连上：${errorMessage}`,
+    "",
+    "我先从本地知识库帮你定位相关内容：",
+    contextLines || "- 没有找到特别匹配的片段，可以换一个更具体的问题。",
+    "",
+    "要开启深度回答，请在项目根目录设置 OPENAI_API_KEY 后启动本地服务。"
+  ].join("\n");
+}
+
+function buildKnowledgeChunks(sourceDocs) {
+  return sourceDocs.flatMap((doc) => {
+    const sections = doc.markdown
+      .split(/\n(?=##\s+)/g)
+      .map((section) => section.trim())
+      .filter(Boolean);
+
+    return sections.map((section, index) => {
+      const heading = section.match(/^##\s+(.+)$/m)?.[1]?.trim() || doc.title;
+      const text = stripMarkdown(section).replace(/\s+/g, " ").trim();
+      return {
+        id: `${doc.id}-${index}`,
+        docId: doc.id,
+        title: heading === doc.title ? doc.title : `${doc.title} · ${heading}`,
+        excerpt: text.slice(0, 1200),
+        searchText: `${doc.title} ${doc.summary} ${heading} ${text}`.toLowerCase(),
+      };
+    });
+  });
+}
+
+function findRelevantChunks(question, limit = 6) {
+  const activeDoc = getActiveDoc();
+  const tokens = tokenizeQuestion(question);
+  const normalizedQuestion = question.toLowerCase();
+
+  return knowledgeChunks
+    .map((chunk) => {
+      let score = chunk.docId === activeDoc?.id ? 2 : 0;
+      if (chunk.searchText.includes(normalizedQuestion)) score += 8;
+      tokens.forEach((token) => {
+        if (chunk.searchText.includes(token)) score += token.length > 3 ? 3 : 1;
+        if (chunk.title.toLowerCase().includes(token)) score += 2;
+      });
+      return { ...chunk, score };
+    })
+    .filter((chunk) => chunk.score > 0)
+    .sort((a, b) => b.score - a.score)
+    .slice(0, limit)
+    .map(({ searchText, score, ...chunk }) => chunk);
+}
+
+function tokenizeQuestion(question) {
+  const normalized = question.toLowerCase();
+  const latin = normalized.match(/[a-z0-9_./+-]{2,}/g) || [];
+  const chinese = normalized.match(/[\u4e00-\u9fff]{2,}/g) || [];
+  return [...new Set([...latin, ...chinese])].slice(0, 24);
+}
+
+function stripMarkdown(markdown) {
+  return markdown
+    .replace(/```[\s\S]*?```/g, " ")
+    .replace(/`([^`]+)`/g, "$1")
+    .replace(/\[([^\]]+)\]\(([^)]+)\)/g, "$1")
+    .replace(/[#>*_|-]+/g, " ");
+}
+
+function formatAiAnswer(text) {
+  const lines = escapeHtml(text).split(/\r?\n/);
+  const html = [];
+  let listOpen = false;
+
+  lines.forEach((line) => {
+    const trimmed = line.trim();
+    if (!trimmed) {
+      if (listOpen) {
+        html.push("</ul>");
+        listOpen = false;
+      }
+      return;
+    }
+
+    const bullet = trimmed.match(/^[-*]\s+(.+)$/);
+    if (bullet) {
+      if (!listOpen) {
+        html.push("<ul>");
+        listOpen = true;
+      }
+      html.push(`<li>${formatAiInline(bullet[1])}</li>`);
+      return;
+    }
+
+    if (listOpen) {
+      html.push("</ul>");
+      listOpen = false;
+    }
+    html.push(`<p>${formatAiInline(trimmed)}</p>`);
+  });
+
+  if (listOpen) html.push("</ul>");
+  return html.join("");
+}
+
+function formatAiInline(text) {
+  return text
+    .replace(/`([^`]+)`/g, "<code>$1</code>")
+    .replace(/\*\*([^*]+)\*\*/g, "<strong>$1</strong>");
 }
 
 function renderToc() {
@@ -346,6 +602,19 @@ function getFilteredDocs() {
 function getActiveDoc() {
   const filtered = getFilteredDocs();
   return filtered.find((doc) => doc.id === state.activeDocId) || filtered[0] || null;
+}
+
+function resolveDocIdFromHash(hash) {
+  if (docs.some((doc) => doc.id === hash)) return hash;
+  if (roadmapAnchorIds.has(hash)) return "role-roadmaps";
+  return null;
+}
+
+function scrollToHashAnchor(hash) {
+  if (!roadmapAnchorIds.has(hash)) return;
+  requestAnimationFrame(() => {
+    document.getElementById(hash)?.scrollIntoView({ block: "start" });
+  });
 }
 
 function markdownToHtml(markdown, query) {

@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>AppsFlyer 学习知识库</title>
-    <link rel="stylesheet" href="./styles.css?v=9">
+    <link rel="stylesheet" href="./styles.css?v=12">
   </head>
   <body>
     <div class="app-shell">
@@ -74,7 +74,43 @@
       </main>
     </div>
 
-    <script src="./docs-data.js?v=9"></script>
-    <script src="./app.js?v=9"></script>
+    <section id="aiAssistant" class="ai-assistant" aria-label="AI 学习助手">
+      <button id="aiToggle" class="ai-toggle" type="button" aria-expanded="false" aria-controls="aiPanel">
+        <span>AI</span>
+      </button>
+      <div id="aiPanel" class="ai-panel" hidden>
+        <header class="ai-header">
+          <div>
+            <span class="ai-kicker">AppsFlyer Tutor</span>
+            <h2>AI 学习助手</h2>
+          </div>
+          <button id="aiClose" class="ai-close" type="button" aria-label="关闭 AI 学习助手">×</button>
+        </header>
+
+        <div id="aiMessages" class="ai-messages" aria-live="polite">
+          <article class="ai-message assistant">
+            <p>可以问我 AppsFlyer 概念、岗位路线、SKAN、OneLink、报表口径、BI 对账或避坑问题。</p>
+          </article>
+          <div class="ai-prompts" aria-label="快捷问题">
+            <button type="button" data-ai-prompt="我是新手，应该按什么顺序学习 AppsFlyer？">新手路线</button>
+            <button type="button" data-ai-prompt="帮我解释 OneLink、归因链接和 deep link 的区别。">OneLink</button>
+            <button type="button" data-ai-prompt="SKAN 为什么数据慢，而且经常是 coarse 或 null？">SKAN</button>
+            <button type="button" data-ai-prompt="AppsFlyer 和渠道后台数据不一致时，我应该怎么排查？">对账排查</button>
+          </div>
+        </div>
+
+        <form id="aiForm" class="ai-form">
+          <label class="sr-only" for="aiInput">输入问题</label>
+          <textarea id="aiInput" rows="3" maxlength="1200" placeholder="问一个 AppsFlyer 问题..." required></textarea>
+          <div class="ai-form-footer">
+            <span id="aiContextHint">会自动引用当前知识库</span>
+            <button id="aiSend" type="submit">发送</button>
+          </div>
+        </form>
+      </div>
+    </section>
+
+    <script src="./docs-data.js?v=12"></script>
+    <script src="./app.js?v=12"></script>
   </body>
 </html>

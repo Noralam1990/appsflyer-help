@@ -1,0 +1,14 @@
+{
+  "name": "appsflyer-help",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "node server.mjs",
+    "check": "node --check server.mjs && node --check appsflyer-learning-site/app.js && node --check appsflyer-learning-site/tools/build-docs.mjs",
+    "build:docs": "node appsflyer-learning-site/tools/build-docs.mjs"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
