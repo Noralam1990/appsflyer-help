@@ -280,8 +280,8 @@ function renderNav() {
   }
 
   filtered.forEach((doc, index) => {
-    const button = document.createElement("button");
-    button.type = "button";
+    const button = document.createElement("a");
+    button.href = `#${encodeURIComponent(doc.id)}`;
     button.className = "doc-button";
     button.classList.toggle("active", doc.id === state.activeDocId);
     if (doc.id === state.activeDocId) {

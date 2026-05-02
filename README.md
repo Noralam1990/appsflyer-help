@@ -31,3 +31,18 @@ export PORT=8787
 ```bash
 npm run build:docs
 ```
+
+## 生成 SEO 文件
+
+默认会以 GitHub Pages 项目地址生成 canonical、`robots.txt` 和 `sitemap.xml`：
+同时会生成 `llms.txt`，并保留 `llm.txt` 作为兼容别名。
+
+```bash
+npm run build:seo
+```
+
+如果你部署在自定义域名或其他路径，先传入正式 URL：
+
+```bash
+SITE_URL="https://your-domain.example/" npm run build:seo
+```

@@ -235,6 +235,7 @@ button {
   color: var(--ink);
   padding: 10px 12px 10px 10px;
   text-align: left;
+  text-decoration: none;
   transition: background 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
 }
 
@@ -394,6 +395,12 @@ button {
   display: block;
   margin-top: 6px;
   font-size: 15px;
+}
+
+.insight-strip a {
+  color: #6d4cc5;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
 }
 
 .toc-panel {
@@ -868,6 +875,42 @@ tr:last-child td {
   padding: 14px;
   color: var(--muted);
   font-size: 14px;
+}
+
+.seo-fallback {
+  margin-top: 22px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: rgba(255, 255, 255, 0.86);
+  padding: 20px;
+}
+
+.seo-fallback h1 {
+  margin: 0 0 10px;
+  font-size: 28px;
+}
+
+.seo-fallback p {
+  color: #3a3034;
+  line-height: 1.7;
+}
+
+.seo-fallback nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.seo-fallback a {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: #fff;
+  color: #6d4cc5;
+  padding: 7px 10px;
+  font-size: 13px;
+  font-weight: 800;
+  text-decoration: none;
 }
 
 .ai-assistant {

@@ -4,9 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "npm run build:docs && npm run build:seo",
     "start": "node server.mjs",
-    "check": "node --check server.mjs && node --check appsflyer-learning-site/app.js && node --check appsflyer-learning-site/tools/build-docs.mjs",
-    "build:docs": "node appsflyer-learning-site/tools/build-docs.mjs"
+    "check": "node --check server.mjs && node --check appsflyer-learning-site/app.js && node --check appsflyer-learning-site/tools/build-docs.mjs && node --check appsflyer-learning-site/tools/build-seo.mjs",
+    "build:docs": "node appsflyer-learning-site/tools/build-docs.mjs",
+    "build:seo": "node appsflyer-learning-site/tools/build-seo.mjs"
   },
   "engines": {
     "node": ">=18"

@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://noralam1990.github.io/appsflyer-help/appsflyer-learning-site/sitemap.xml
