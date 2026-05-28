@@ -29,6 +29,7 @@
 
 html {
   scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
 }
 
 body {
@@ -37,6 +38,7 @@ body {
     linear-gradient(125deg, rgba(255, 240, 184, 0.46) 0%, rgba(255, 248, 242, 0.9) 32%, rgba(238, 233, 255, 0.58) 68%, rgba(228, 248, 243, 0.72) 100%),
     var(--bg);
   color: var(--ink);
+  overflow-x: hidden;
 }
 
 button,
@@ -47,6 +49,13 @@ textarea {
 
 button {
   cursor: pointer;
+}
+
+a,
+button,
+input,
+textarea {
+  -webkit-tap-highlight-color: rgba(153, 136, 255, 0.18);
 }
 
 .sr-only {
@@ -64,12 +73,15 @@ button {
 .app-shell {
   display: grid;
   grid-template-columns: minmax(280px, 340px) minmax(0, 1fr);
+  width: 100%;
   min-height: 100vh;
+  min-width: 0;
 }
 
 .sidebar {
   position: sticky;
   top: 0;
+  min-width: 0;
   height: 100vh;
   overflow-y: auto;
   border-right: 1px solid var(--line);
@@ -325,6 +337,7 @@ button {
 
 .main {
   width: min(1120px, 100%);
+  min-width: 0;
   margin: 0 auto;
   padding: 24px clamp(18px, 4vw, 46px) 56px;
 }
@@ -1171,38 +1184,137 @@ tr:last-child td {
   }
 
   .sidebar {
-    position: relative;
+    position: sticky;
+    z-index: 10;
     height: auto;
+    max-height: none;
     border-right: 0;
     border-bottom: 1px solid var(--line);
+    padding: 16px;
+    box-shadow: 0 10px 28px rgba(184, 101, 98, 0.08);
+  }
+
+  .brand {
+    padding-bottom: 14px;
+  }
+
+  .brand-mark {
+    flex-basis: 40px;
+    width: 40px;
+    height: 40px;
+  }
+
+  .brand h1 {
+    font-size: 17px;
+  }
+
+  .search {
+    margin-top: 14px;
+  }
+
+  .search input {
+    height: 44px;
   }
 
   .main {
-    padding-top: 18px;
+    padding: 16px 14px calc(72px + env(safe-area-inset-bottom, 0px));
   }
 
   .toolbar {
     align-items: flex-start;
     flex-direction: column;
+    gap: 12px;
+    min-height: 0;
+    padding-bottom: 14px;
+  }
+
+  .toolbar h2 {
+    font-size: 26px;
   }
 
   .toolbar-actions {
     justify-content: flex-start;
+    width: 100%;
+  }
+
+  .toolbar-actions .ghost-button {
+    flex: 1 1 0;
+    min-height: 40px;
   }
 
   .insight-strip {
     grid-template-columns: 1fr;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .insight-strip article {
+    padding: 12px;
   }
 
   .doc-nav {
     display: flex;
     gap: 10px;
     overflow-x: auto;
-    padding-bottom: 6px;
+    margin-right: -16px;
+    margin-left: -16px;
+    padding: 0 16px 8px;
+    scroll-padding-inline: 16px;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
   }
 
   .doc-button {
-    flex: 0 0 220px;
+    flex: 0 0 min(238px, 76vw);
+    min-height: 76px;
+    scroll-snap-align: start;
+  }
+
+  .toc-panel {
+    margin-top: 14px;
+    padding: 12px;
+  }
+
+  .toc-list {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .toc-list a {
+    flex: 0 0 auto;
+  }
+
+  .content {
+    margin-top: 16px;
+    padding: 20px;
+  }
+
+  .content h1 {
+    font-size: 30px;
+  }
+
+  .content h2 {
+    margin-top: 28px;
+    font-size: 21px;
+  }
+
+  .content p,
+  .content li {
+    font-size: 15px;
+    line-height: 1.72;
+  }
+
+  .table-wrap {
+    margin-right: -8px;
+    margin-left: -8px;
+  }
+
+  th,
+  td {
+    padding: 9px 10px;
+    font-size: 13px;
   }
 
   .role-map,
@@ -1219,32 +1331,142 @@ tr:last-child td {
     right: 12px;
     bottom: 12px;
   }
+
+  .ai-toggle {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+  }
 }
 
 @media (max-width: 560px) {
   .sidebar {
-    padding: 16px;
+    padding: 14px 14px 12px;
+  }
+
+  .brand {
+    gap: 10px;
+  }
+
+  .brand p {
+    font-size: 12px;
   }
 
   .role-filter {
-    grid-template-columns: repeat(2, minmax(0, 1fr));
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    margin-right: -14px;
+    margin-left: -14px;
+    padding: 0 14px 4px;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .role-pill {
+    flex: 0 0 auto;
+    min-width: 82px;
+    min-height: 38px;
+    padding-inline: 12px;
+    white-space: nowrap;
+  }
+
+  .doc-nav {
+    margin-right: -14px;
+    margin-left: -14px;
+    padding-inline: 14px;
+    scroll-padding-inline: 14px;
+  }
+
+  .main {
+    padding-inline: 10px;
+  }
+
+  .toolbar h2 {
+    font-size: 24px;
+  }
+
+  .ghost-button {
+    min-height: 40px;
+    padding-inline: 8px;
+    font-size: 12.5px;
   }
 
   .content {
-    padding: 18px;
+    border-right: 0;
+    border-left: 0;
+    border-radius: 0;
+    margin-right: -10px;
+    margin-left: -10px;
+    padding: 18px 16px;
   }
 
   .content h1 {
-    font-size: 27px;
+    font-size: 26px;
+  }
+
+  .content h2 {
+    font-size: 20px;
+  }
+
+  .content h3 {
+    font-size: 17px;
+  }
+
+  .content ul,
+  .content ol {
+    padding-left: 20px;
+  }
+
+  .term-chip {
+    width: 100%;
+    align-items: flex-start;
   }
 
   .ai-panel {
-    right: -2px;
-    width: calc(100vw - 20px);
-    height: min(590px, calc(100vh - 100px));
+    position: fixed;
+    right: 10px;
+    bottom: calc(74px + env(safe-area-inset-bottom, 0px));
+    left: 10px;
+    width: auto;
+    height: min(600px, calc(100dvh - 98px));
+    max-height: calc(100dvh - 98px);
   }
 
   .ai-prompts {
     grid-template-columns: 1fr;
+  }
+
+  .ai-messages {
+    padding: 12px;
+  }
+
+  .ai-message {
+    max-width: 100%;
+  }
+
+  .ai-form {
+    padding: 10px;
+  }
+}
+
+@media (max-width: 380px) {
+  .brand h1 {
+    font-size: 16px;
+  }
+
+  .brand p {
+    display: none;
+  }
+
+  .toolbar-actions {
+    flex-direction: column;
+  }
+
+  .toolbar-actions .ghost-button {
+    width: 100%;
+  }
+
+  .doc-button {
+    flex-basis: 82vw;
   }
 }
