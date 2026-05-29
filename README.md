@@ -46,3 +46,11 @@ npm run build:seo
 ```bash
 SITE_URL="https://your-domain.example/" npm run build:seo
 ```
+
+## Vercel 数据监测
+
+站点已在 `index.html` 接入 Vercel Web Analytics 静态脚本。
+上线收数前，需要在 Vercel 项目的 Analytics 面板中启用 Web Analytics，并重新部署一次。
+如果 Vercel 面板给出的是专属 `/<unique-path>/script.js`，把 `index.html` 里的脚本地址替换成面板展示的地址。
+
+本地 `file://` 预览不会产生线上访问统计。
