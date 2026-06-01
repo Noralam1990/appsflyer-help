@@ -34,7 +34,7 @@ npm run build:docs
 
 ## 生成 SEO 文件
 
-默认会以 GitHub Pages 项目地址生成 canonical、`robots.txt` 和 `sitemap.xml`：
+默认会以正式域名 `https://appsflyerhelp.tech/` 生成 canonical、`robots.txt` 和 `sitemap.xml`：
 同时会生成 `llms.txt`，并保留 `llm.txt` 作为兼容别名。
 
 ```bash

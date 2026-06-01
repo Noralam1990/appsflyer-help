@@ -4,8 +4,8 @@
 
 ## Site
 
-- Canonical URL: https://noralam1990.github.io/appsflyer-help/appsflyer-learning-site/
-- Last modified: 2026-05-02
+- Canonical URL: https://appsflyerhelp.tech/
+- Last modified: 2026-06-01
 - Language: zh-CN
 - Access: free public learning resource
 - Maintainer: Noralam1990
@@ -19,14 +19,14 @@
 
 ## Core Pages
 
-- [总览与使用方式](https://noralam1990.github.io/appsflyer-help/appsflyer-learning-site/#overview): 知识分类地图、最短学习路径、可信度说明。
-- [术语速查](https://noralam1990.github.io/appsflyer-help/appsflyer-learning-site/#glossary): 归因、链接、SKAN、报表、收入、反作弊术语。
-- [核心知识笔记](https://noralam1990.github.io/appsflyer-help/appsflyer-learning-site/#core-notes): 归因模型、OneLink、SDK、事件、报表、ROI、渠道和人群。
-- [SKAN 与 iOS 隐私](https://noralam1990.github.io/appsflyer-help/appsflyer-learning-site/#skan-ios-privacy): ATT、IDFA、AAP、SKAN 4、Conversion Value、SSOT 和配置检查。
-- [数据报表与 API](https://noralam1990.github.io/appsflyer-help/appsflyer-learning-site/#data-reporting-api): LTV、Activity、Raw Data、Data Locker、Pull API、Push API 和 BI 对账。
-- [岗位学习路线](https://noralam1990.github.io/appsflyer-help/appsflyer-learning-site/#role-roadmaps): 新手、增长、产品、数据、开发、iOS/SKAN 专项学习路线。
-- [避坑清单](https://noralam1990.github.io/appsflyer-help/appsflyer-learning-site/#pitfalls): 归因、链接、SDK、SKAN、渠道、ROI、BI、反作弊和人群同步风险。
-- [官方来源索引](https://noralam1990.github.io/appsflyer-help/appsflyer-learning-site/#sources): 官方链接、核查日期、页面更新时间和采用依据。
+- [总览与使用方式](https://appsflyerhelp.tech/#overview): 知识分类地图、最短学习路径、可信度说明。
+- [术语速查](https://appsflyerhelp.tech/#glossary): 归因、链接、SKAN、报表、收入、反作弊术语。
+- [核心知识笔记](https://appsflyerhelp.tech/#core-notes): 归因模型、OneLink、SDK、事件、报表、ROI、渠道和人群。
+- [SKAN 与 iOS 隐私](https://appsflyerhelp.tech/#skan-ios-privacy): ATT、IDFA、AAP、SKAN 4、Conversion Value、SSOT 和配置检查。
+- [数据报表与 API](https://appsflyerhelp.tech/#data-reporting-api): LTV、Activity、Raw Data、Data Locker、Pull API、Push API 和 BI 对账。
+- [岗位学习路线](https://appsflyerhelp.tech/#role-roadmaps): 新手、增长、产品、数据、开发、iOS/SKAN 专项学习路线。
+- [避坑清单](https://appsflyerhelp.tech/#pitfalls): 归因、链接、SDK、SKAN、渠道、ROI、BI、反作弊和人群同步风险。
+- [官方来源索引](https://appsflyerhelp.tech/#sources): 官方链接、核查日期、页面更新时间和采用依据。
 
 ## Key Topics
 

@@ -10,18 +10,20 @@ const sitemapFile = join(siteDir, "sitemap.xml");
 const llmsFile = join(siteDir, "llms.txt");
 const llmAliasFile = join(siteDir, "llm.txt");
 
-const defaultSiteUrl = "https://noralam1990.github.io/appsflyer-help/appsflyer-learning-site/";
+const defaultSiteUrl = "https://appsflyerhelp.tech/";
+const legacySiteUrls = ["https://noralam1990.github.io/appsflyer-help/appsflyer-learning-site/"];
 const siteUrl = normalizeSiteUrl(process.env.SITE_URL || defaultSiteUrl);
 const today = process.env.SEO_LASTMOD || formatDateInTimeZone(process.env.SITE_TIMEZONE || "Asia/Shanghai");
 
 const indexHtml = await readFile(indexFile, "utf8");
-const updatedHtml = indexHtml
+let updatedHtml = indexHtml
   .replace(/<link rel="canonical" href="[^"]+">/, `<link rel="canonical" href="${siteUrl}">`)
   .replace(/<meta property="og:url" content="[^"]+">/, `<meta property="og:url" content="${siteUrl}">`)
-  .replaceAll(`${defaultSiteUrl}#website`, `${siteUrl}#website`)
-  .replaceAll(`${defaultSiteUrl}#learning-resource`, `${siteUrl}#learning-resource`)
-  .replaceAll(`"url": "${defaultSiteUrl}"`, `"url": "${siteUrl}"`)
   .replace(/"dateModified": "\d{4}-\d{2}-\d{2}"/, `"dateModified": "${today}"`);
+
+for (const sourceUrl of [defaultSiteUrl, ...legacySiteUrls]) {
+  updatedHtml = updatedHtml.replaceAll(sourceUrl, siteUrl);
+}
 
 await writeFile(indexFile, updatedHtml, "utf8");
 
